@@ -42,6 +42,7 @@ tasks are finished.
 
 Concentrate
 -----------
-The gulp file also contains a task to run *concentrate* for a site. After
+The gulp file also contains a task to run
+[concentrate](https://github.com/silverorange/Concentrate) for a site. After
 performing the `npm install` step you can run `gulp concentrate` and all the
 compiled, combined files will be generated.
