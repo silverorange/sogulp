@@ -2,6 +2,17 @@
   "name": "sogulp",
   "version": "0.1.0",
   "description": "silverorange Gulp configuration",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/silverorange/sogulp"
+  },
+  "files": [
+    "lib",
+    "gulpfile.js"
+  ],
+  "bugs": {
+    "url": "https://github.com/silverorange/sogulp/issues"
+  },
   "dependencies": {
     "gulp": ">=3.5.5",
     "gulp-css-rebase-urls": ">=0.0.5",
@@ -12,5 +23,12 @@
     "gulp-spawn": "~0.3.0",
     "gulp-if": "~1.2.5",
     "q": "~1.0.1"
-  }
+  },
+  "author": "Michael Gauthier",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ]
 }
