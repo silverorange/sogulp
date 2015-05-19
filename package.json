@@ -6,6 +6,10 @@
     "type": "git",
     "url": "https://github.com/silverorange/sogulp"
   },
+  "files": [
+    "lib",
+    "gulpfile.js"
+  ],
   "bugs": {
     "url": "https://github.com/silverorange/sogulp/issues"
   },
