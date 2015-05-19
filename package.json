@@ -1,0 +1,16 @@
+{
+  "name": "sogulp",
+  "version": "0.1.0",
+  "description": "silverorange Gulp configuration",
+  "dependencies": {
+    "gulp": ">=3.5.5",
+    "gulp-css-rebase-urls": ">=0.0.5",
+    "gulp-less": ">=1.2.1",
+    "gulp-rename": ">=1.1.0",
+    "gulp-util": ">=2.2.14",
+    "gulp-changed": ">=0.2.1",
+    "gulp-spawn": "~0.3.0",
+    "gulp-if": "~1.2.5",
+    "q": "~1.0.1"
+  }
+}
