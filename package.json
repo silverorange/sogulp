@@ -24,7 +24,7 @@
     "gulp-if": "~1.2.5",
     "q": "~1.0.1"
   },
-  "author": "Michael Gauthier",
+  "author": "Michael Gauthier <mike@silverorange.com>",
   "licenses": [
     {
       "type": "MIT",
