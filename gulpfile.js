@@ -21,7 +21,7 @@ gulp.task('concentrate-internal', [ 'setup-symlinks' ], concentrate.task);
 gulp.task('concentrate', [ 'concentrate-internal' ], function() {
 	return symlinks.task.teardown();
 });
-gulp.task('build-less', [ 'setup-symlinks'], less.task);
+gulp.task('build-less', [ 'setup-symlinks' ], less.task);
 gulp.task('write-flag', [ 'build-less' ], flags.task);
 
 function cleanShutdown() {
