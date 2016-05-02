@@ -1,6 +1,6 @@
 {
   "name": "sogulp",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "silverorange Gulp configuration",
   "repository": {
     "type": "git",
@@ -23,7 +23,10 @@
     "gulp-spawn": "~0.3.0",
     "q": "~1.0.1"
   },
-  "author": "Michael Gauthier <mike@silverorange.com>",
+  "contributors": [
+    "Michael Gauthier <mike@silverorange.com>",
+    "Charles Waddell <charles@silverorange.com>"
+  ],
   "licenses": [
     {
       "type": "MIT",
