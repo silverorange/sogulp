@@ -3,8 +3,8 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 
-var vendor_symlinks = require('./lib/vendor-symlinks');
-var package_symlinks = require('./lib/package-symlinks');
+var vendorSymlinks = require('./lib/vendor-symlinks');
+var packageSymlinks = require('./lib/package-symlinks');
 var concentrate = require('./lib/concentrate');
 var paths = require('./lib/paths');
 var flags = require('./lib/flags');
@@ -15,11 +15,11 @@ var less = require('./lib/less');
 
 gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
 gulp.task('phplint', ['setup-symlinks'], phplint.task);
-gulp.task('setup-vendor-symlinks', vendor_symlinks.task.setup);
-gulp.task('teardown-vendor-symlinks', vendor_symlinks.task.teardown);
-gulp.task('setup-package-symlinks', package_symlinks.task.setup);
-gulp.task('teardown-package-symlinks', package_symlinks.task.teardown);
-gulp.task('setup-symlinks', [ 'setup-package-symlinks', 'setup-vendor-symlinks' ]);
+gulp.task('setup-vendor-symlinks', vendorSymlinks.task.setup);
+gulp.task('teardown-vendor-symlinks', vendorSymlinks.task.teardown);
+gulp.task('setup-package-symlinks', packageSymlinks.task.setup);
+gulp.task('teardown-package-symlinks', packageSymlinks.task.teardown);
+gulp.task('setup-symlinks', ['setup-package-symlinks', 'setup-vendor-symlinks']);
 gulp.task('clean', ['teardown-symlinks'], clean.task);
 gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
 gulp.task('concentrate', ['concentrate-internal'], function() {
@@ -32,8 +32,8 @@ function cleanShutdown() {
   gutil.log(gutil.colors.blue('BYE'));
 
   flags.remove();
-  vendor_symlinks.task.teardown();
-  package_symlinks.task.teardown();
+  vendorSymlinks.task.teardown();
+  packageSymlinks.task.teardown();
 
   process.exit();
 }
