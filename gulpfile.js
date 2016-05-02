@@ -9,9 +9,11 @@ var paths = require('./lib/paths');
 var flags = require('./lib/flags');
 var clean = require('./lib/clean');
 var phplint = require('./lib/phplint');
+var phpclassmap = require('./lib/phpclassmap');
 var less = require('./lib/less');
 
 gulp.task('phplint', phplint.task);
+gulp.task('phpclassmap', phpclassmap.task);
 gulp.task('setup-symlinks', symlinks.task.setup);
 gulp.task('teardown-symlinks', symlinks.task.teardown);
 gulp.task('clean', [ 'teardown-symlinks' ], clean.task);
@@ -41,7 +43,7 @@ gulp.task('watch', [ 'setup-symlinks' ], function () {
 	process.on('SIGTERM', cleanShutdown);
 
 	gulp.watch(paths.less, [ 'build-less' ]);
-	gulp.watch(paths.php, [ 'phplint' ]);
+	gulp.watch(paths.php, [ 'phplint', 'phpclassmap' ]);
 });
 
 gulp.task('default', [ 'build-less', 'phplint', 'watch' ]);
