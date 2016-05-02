@@ -23,7 +23,7 @@ gulp.task('setup-symlinks', ['setup-package-symlinks', 'setup-vendor-symlinks'])
 gulp.task('clean', ['teardown-symlinks'], clean.task);
 gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
 gulp.task('concentrate', ['concentrate-internal'], function() {
-  return symlinks.task.teardown();
+  return packageSymlinks.task.teardown();
 });
 gulp.task('build-less', ['setup-symlinks'], less.task);
 gulp.task('write-flag', ['build-less'], flags.task);
