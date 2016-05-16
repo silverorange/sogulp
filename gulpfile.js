@@ -20,6 +20,7 @@ gulp.task('teardown-vendor-symlinks', vendorSymlinks.task.teardown);
 gulp.task('setup-package-symlinks', packageSymlinks.task.setup);
 gulp.task('teardown-package-symlinks', packageSymlinks.task.teardown);
 gulp.task('setup-symlinks', ['setup-package-symlinks', 'setup-vendor-symlinks']);
+gulp.task('teardown-symlinks', ['teardown-package-symlinks', 'teardown-vendor-symlinks']);
 gulp.task('clean', ['teardown-symlinks'], clean.task);
 gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
 gulp.task('concentrate', ['concentrate-internal'], function() {
