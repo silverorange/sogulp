@@ -2,6 +2,7 @@
 
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var fs = require('fs');
 
 var vendorSymlinks = require('./lib/vendor-symlinks');
 var packageSymlinks = require('./lib/package-symlinks');
@@ -13,15 +14,25 @@ var phplint = require('./lib/phplint');
 var phpclassmap = require('./lib/phpclassmap');
 var less = require('./lib/less');
 
-gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
-gulp.task('phplint', ['setup-symlinks'], phplint.task);
-gulp.task('setup-vendor-symlinks', vendorSymlinks.task.setup);
-gulp.task('teardown-vendor-symlinks', vendorSymlinks.task.teardown);
+var hasComposer = (fs.existsSync(paths.composerLock));
+
 gulp.task('setup-package-symlinks', packageSymlinks.task.setup);
 gulp.task('teardown-package-symlinks', packageSymlinks.task.teardown);
-gulp.task('setup-symlinks', ['setup-package-symlinks', 'setup-vendor-symlinks']);
+
+if (hasComposer) {
+  gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
+  gulp.task('setup-vendor-symlinks', vendorSymlinks.task.setup);
+  gulp.task('teardown-vendor-symlinks', vendorSymlinks.task.teardown);
+  gulp.task('setup-symlinks', ['setup-package-symlinks', 'setup-vendor-symlinks']);
+  gulp.task('teardown-symlinks', ['teardown-package-symlinks', 'teardown-vendor-symlinks']);
+} else {
+  gulp.task('setup-symlinks', ['setup-package-symlinks']);
+  gulp.task('teardown-symlinks', ['teardown-package-symlinks']);
+}
+
+gulp.task('phplint', ['setup-symlinks'], phplint.task);
 gulp.task('clean', ['teardown-symlinks'], clean.task);
-gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
+gulp.task('concentrate-internal', ['setup-package-symlinks'], concentrate.task);
 gulp.task('concentrate', ['concentrate-internal'], function() {
   return packageSymlinks.task.teardown();
 });
@@ -32,7 +43,9 @@ function cleanShutdown() {
   gutil.log(gutil.colors.blue('BYE'));
 
   flags.remove();
-  vendorSymlinks.task.teardown();
+  if (hasComposer) {
+    vendorSymlinks.task.teardown();
+  }
   packageSymlinks.task.teardown();
 
   process.exit();
@@ -48,7 +61,9 @@ gulp.task('default', ['setup-symlinks', 'write-flag'], function () {
   process.on('SIGTERM', cleanShutdown);
 
   gulp.watch(paths.less, ['build-less']);
-  gulp.watch(paths.php, ['phpclassmap'])
+
+  var dependencies = (hasComposer) ? ['phpclassmap'] : [];
+  gulp.watch(paths.php, dependencies)
     .on('change', function(event) {
       if (/^(changed|renamed|added)$/.test(event.type)) {
         return phplint.stream(event.path);
