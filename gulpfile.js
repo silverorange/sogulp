@@ -2,6 +2,7 @@
 
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var fs = require('fs');
 
 var vendorSymlinks = require('./lib/vendor-symlinks');
 var packageSymlinks = require('./lib/package-symlinks');
@@ -49,7 +50,9 @@ gulp.task('default', ['setup-symlinks', 'write-flag'], function () {
   process.on('SIGTERM', cleanShutdown);
 
   gulp.watch(paths.less, ['build-less']);
-  gulp.watch(paths.php, ['phpclassmap'])
+
+  var dependencies = fs.existsSync(paths.composerLock) ? ['phpclassmap'] : [];
+  gulp.watch(paths.php, dependencies)
     .on('change', function(event) {
       if (/^(changed|renamed|added)$/.test(event.type)) {
         return phplint.stream(event.path);
