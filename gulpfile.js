@@ -2,6 +2,7 @@
 
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var fs = require('fs');
 
 var vendorSymlinks = require('./lib/vendor-symlinks');
 var packageSymlinks = require('./lib/package-symlinks');
@@ -20,6 +21,7 @@ gulp.task('teardown-vendor-symlinks', vendorSymlinks.task.teardown);
 gulp.task('setup-package-symlinks', packageSymlinks.task.setup);
 gulp.task('teardown-package-symlinks', packageSymlinks.task.teardown);
 gulp.task('setup-symlinks', ['setup-package-symlinks', 'setup-vendor-symlinks']);
+gulp.task('teardown-symlinks', ['teardown-package-symlinks', 'teardown-vendor-symlinks']);
 gulp.task('clean', ['teardown-symlinks'], clean.task);
 gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
 gulp.task('concentrate', ['concentrate-internal'], function() {
@@ -48,7 +50,9 @@ gulp.task('default', ['setup-symlinks', 'write-flag'], function () {
   process.on('SIGTERM', cleanShutdown);
 
   gulp.watch(paths.less, ['build-less']);
-  gulp.watch(paths.php, ['phpclassmap'])
+
+  var dependencies = fs.existsSync(paths.composerLock) ? ['phpclassmap'] : [];
+  gulp.watch(paths.php, dependencies)
     .on('change', function(event) {
       if (/^(changed|renamed|added)$/.test(event.type)) {
         return phplint.stream(event.path);
