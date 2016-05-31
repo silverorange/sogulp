@@ -2,17 +2,18 @@
 
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var fs = require('fs');
+var q = require('q');
 
 var vendorSymlinks = require('./lib/vendor-symlinks');
 var packageSymlinks = require('./lib/package-symlinks');
 var concentrate = require('./lib/concentrate');
-var paths = require('./lib/paths');
 var flags = require('./lib/flags');
 var clean = require('./lib/clean');
 var phplint = require('./lib/phplint');
 var phpclassmap = require('./lib/phpclassmap');
+var phpwatcher = require('./lib/phpwatcher');
 var less = require('./lib/less');
+var lesswatcher = require('./lib/lesswatcher');
 
 gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
 gulp.task('phplint', ['setup-symlinks'], phplint.task);
@@ -49,13 +50,8 @@ gulp.task('default', ['setup-symlinks', 'write-flag'], function () {
   process.on('SIGHUP', cleanShutdown);
   process.on('SIGTERM', cleanShutdown);
 
-  gulp.watch(paths.less, ['build-less']);
-
-  var dependencies = fs.existsSync(paths.composerLock) ? ['phpclassmap'] : [];
-  gulp.watch(paths.php, dependencies)
-    .on('change', function(event) {
-      if (/^(changed|renamed|added)$/.test(event.type)) {
-        return phplint.stream(event.path);
-      }
-    });
+  return q.all([
+    phpwatcher.watch(),
+    lesswatcher.watch()
+  ]);
 });
