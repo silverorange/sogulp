@@ -23,6 +23,7 @@
     "gulp-util": ">=2.2.14",
     "gulp-changed": ">=0.2.1",
     "gulp-spawn": "~0.3.0",
+    "minimist": "^1.2.0",
     "q": "~1.0.1"
   },
   "contributors": [

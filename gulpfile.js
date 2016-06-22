@@ -3,9 +3,9 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var q = require('q');
+var minimist = require('minimist');
 
-var vendorSymlinks = require('./lib/vendor-symlinks');
-var packageSymlinks = require('./lib/package-symlinks');
+var symlinks = require('./lib/symlinks');
 var concentrate = require('./lib/concentrate');
 var flags = require('./lib/flags');
 var clean = require('./lib/clean');
@@ -15,28 +15,46 @@ var phpwatcher = require('./lib/phpwatcher');
 var less = require('./lib/less');
 var lesswatcher = require('./lib/lesswatcher');
 
+var knownOptions = {
+  boolean: 'no.symlinks',
+  default: { 'no.symlinks': false }
+};
+
+var options = minimist(process.argv.slice(2), knownOptions);
+
 gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
 gulp.task('phplint', ['setup-symlinks'], phplint.task);
-gulp.task('setup-vendor-symlinks', vendorSymlinks.task.setup);
-gulp.task('teardown-vendor-symlinks', vendorSymlinks.task.teardown);
-gulp.task('setup-package-symlinks', packageSymlinks.task.setup);
-gulp.task('teardown-package-symlinks', packageSymlinks.task.teardown);
-gulp.task('setup-symlinks', ['setup-package-symlinks', 'setup-vendor-symlinks']);
-gulp.task('teardown-symlinks', ['teardown-package-symlinks', 'teardown-vendor-symlinks']);
 gulp.task('clean', ['teardown-symlinks'], clean.task);
 gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
-gulp.task('concentrate', ['concentrate-internal'], function() {
-  return packageSymlinks.task.teardown();
-});
 gulp.task('build-less', ['setup-symlinks'], less.task);
 gulp.task('write-flag', ['build-less'], flags.task);
+
+gulp.task('concentrate', ['concentrate-internal'], function() {
+  if (!options.no.symlinks) {
+    symlinks.task.teardown();
+  }
+});
+
+gulp.task('setup-symlinks', function() {
+  if (!options.no.symlinks) {
+    symlinks.task.setup();
+  }
+});
+
+gulp.task('teardown-symlinks', function() {
+  if(!options.no.symlinks) {
+    symlinks.task.teardown();
+  }
+});
 
 function cleanShutdown() {
   gutil.log(gutil.colors.blue('BYE'));
 
   flags.remove();
-  vendorSymlinks.task.teardown();
-  packageSymlinks.task.teardown();
+
+  if (!options.no.symlinks) {
+    symlinks.task.teardown();
+  }
 
   process.exit();
 }
