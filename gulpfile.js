@@ -31,7 +31,7 @@ if (options.symlinks) {
   gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
   gulp.task('build-less', ['setup-symlinks'], less.task);
   gulp.task('concentrate', ['concentrate-internal'], function() {
-    symlinks.task.teardown();
+    return symlinks.task.teardown();
   });
 } else {
   gulp.task('phpclassmap', phpclassmap.task);
