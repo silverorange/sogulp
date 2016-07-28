@@ -16,43 +16,39 @@ var less = require('./lib/less');
 var lesswatcher = require('./lib/lesswatcher');
 
 var knownOptions = {
-  boolean: 'no.symlinks',
-  default: { 'no.symlinks': false }
+  boolean: 'symlinks',
+  default: { 'symlinks': true }
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
 
-gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
-gulp.task('phplint', ['setup-symlinks'], phplint.task);
-gulp.task('clean', ['teardown-symlinks'], clean.task);
-gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
-gulp.task('build-less', ['setup-symlinks'], less.task);
+if (options.symlinks) {
+  gulp.task('setup-symlinks', symlinks.task.setup);
+  gulp.task('teardown-symlinks', symlinks.task.teardown);
+  gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
+  gulp.task('phplint', ['setup-symlinks'], phplint.task);
+  gulp.task('clean', ['teardown-symlinks'], clean.task);
+  gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
+  gulp.task('build-less', ['setup-symlinks'], less.task);
+  gulp.task('concentrate', ['concentrate-internal'], function() {
+    return symlinks.task.teardown();
+  });
+} else {
+  gulp.task('phpclassmap', phpclassmap.task);
+  gulp.task('phplint', phplint.task);
+  gulp.task('clean', clean.task);
+  gulp.task('build-less', less.task);
+  gulp.task('concentrate', concentrate.task);
+}
+
 gulp.task('write-flag', ['build-less'], flags.task);
-
-gulp.task('concentrate', ['concentrate-internal'], function() {
-  if (!options.no.symlinks) {
-    symlinks.task.teardown();
-  }
-});
-
-gulp.task('setup-symlinks', function() {
-  if (!options.no.symlinks) {
-    symlinks.task.setup();
-  }
-});
-
-gulp.task('teardown-symlinks', function() {
-  if(!options.no.symlinks) {
-    symlinks.task.teardown();
-  }
-});
 
 function cleanShutdown() {
   gutil.log(gutil.colors.blue('BYE'));
 
   flags.remove();
 
-  if (!options.no.symlinks) {
+  if (options.symlinks) {
     symlinks.task.teardown();
   }
 
@@ -63,7 +59,11 @@ function cleanShutdown() {
  * Watches LESS and JS files for changes and recompiles/minifies/bundles
  * them.
  */
-gulp.task('default', ['setup-symlinks', 'write-flag'], function () {
+var dependencies = (options.symlinks) ?
+  ['setup-symlinks', 'write-flag'] :
+  ['write-flag'];
+
+gulp.task('default', dependencies, function () {
   process.on('SIGINT', cleanShutdown);
   process.on('SIGHUP', cleanShutdown);
   process.on('SIGTERM', cleanShutdown);
