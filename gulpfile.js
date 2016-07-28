@@ -16,8 +16,8 @@ var less = require('./lib/less');
 var lesswatcher = require('./lib/lesswatcher');
 
 var knownOptions = {
-  boolean: 'no.symlinks',
-  default: { 'no.symlinks': false }
+  boolean: 'symlinks',
+  default: { 'symlinks': false }
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
@@ -30,19 +30,19 @@ gulp.task('build-less', ['setup-symlinks'], less.task);
 gulp.task('write-flag', ['build-less'], flags.task);
 
 gulp.task('concentrate', ['concentrate-internal'], function() {
-  if (!options.no.symlinks) {
+  if (options.symlinks) {
     symlinks.task.teardown();
   }
 });
 
 gulp.task('setup-symlinks', function() {
-  if (!options.no.symlinks) {
+  if (options.symlinks) {
     symlinks.task.setup();
   }
 });
 
 gulp.task('teardown-symlinks', function() {
-  if(!options.no.symlinks) {
+  if (options.symlinks) {
     symlinks.task.teardown();
   }
 });
@@ -52,7 +52,7 @@ function cleanShutdown() {
 
   flags.remove();
 
-  if (!options.no.symlinks) {
+  if (options.symlinks) {
     symlinks.task.teardown();
   }
 
