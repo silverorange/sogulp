@@ -26,18 +26,16 @@ file.
 
 Symlinks
 --------
-The gulp watch task and other gulp tasks automatically set the `www/package/*`
-symlinks to point to local personal git repositories. If you do not have a
-repo checked out for a package, the symlink for that package is not updated.
+The gulp watch task and other gulp tasks automatically set the
+`vendor/silverorange/*` symlinks to point to local personal git repositories.
+If you do not have a repo checked out for a package, the symlink for that
+package is not updated.
 
-Symlink updating is required for gulp tasks because all the tasks run on
-the local filesystem and not in an Apache context. This means if the PEAR
-packages are not yet installed, `lessc` and `concentrate` can not find
-required files in packages. Additionally, if you are trying to test changes to
-a package, updated symlinks are required so the commands find the correct
-files.
+Symlinks are required to use development packages (PHP or LESS). If you want
+to run gulp for compiled LESS but want to use the packages defined in the
+site `composer.lock`, use the `--no-symlinks` flag.
 
-Symlink handling is automatic and symlinks are restored after gulp
+Symlink handling is automatic and package symlinks are restored after gulp
 tasks are finished.
 
 Concentrate
