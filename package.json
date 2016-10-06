@@ -26,6 +26,16 @@
     "minimist": "^1.2.0",
     "q": "~1.0.1"
   },
+  "devDependencies": {
+    "eslint": "^3.4.0",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-jsx-a11y": "^2.2.1",
+    "eslint-plugin-react": "^6.2.0"
+  },
+  "scripts": {
+    "lint": "eslint lib gulpfile.js"
+  },
   "contributors": [
     "Michael Gauthier <mike@silverorange.com>",
     "Charles Waddell <charles@silverorange.com>"
@@ -35,5 +45,6 @@
       "type": "MIT",
       "url": "http://opensource.org/licenses/MIT"
     }
-  ]
+  ],
+  "engines" : { "node" : ">=6.7.0" }
 }
