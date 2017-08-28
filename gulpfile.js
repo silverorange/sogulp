@@ -14,13 +14,13 @@ const less = require('./lib/less');
 const lesswatcher = require('./lib/lesswatcher');
 
 const knownOptions = {
-  boolean: 'symlinks',
-  default: { symlinks: true },
+  string: 'symlinks',
+  default: { symlinks: '' },
 };
 
 const options = minimist(process.argv.slice(2), knownOptions);
 
-if (options.symlinks) {
+if (options.symlinks !== '') {
   gulp.task('setup-symlinks', symlinks.task.setup);
   gulp.task('teardown-symlinks', symlinks.task.teardown);
   gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
