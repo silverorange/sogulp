@@ -29,7 +29,13 @@ function symlinkSetupTask(err, progress, complete) {
   );
 }
 
-if (options.symlinks !== '') {
+if (options.symlinks === '') {
+  gulp.task('phpclassmap', phpclassmap.task);
+  gulp.task('phplint', phplint.task);
+  gulp.task('clean', clean.task);
+  gulp.task('build-less', less.task);
+  gulp.task('concentrate', concentrate.task);
+} else {
   gulp.task('setup-symlinks', symlinkSetupTask);
   gulp.task('teardown-symlinks', symlinks.task.teardown);
   gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
@@ -42,12 +48,6 @@ if (options.symlinks !== '') {
     ['concentrate-internal'],
     () => symlinks.task.teardown()
   );
-} else {
-  gulp.task('phpclassmap', phpclassmap.task);
-  gulp.task('phplint', phplint.task);
-  gulp.task('clean', clean.task);
-  gulp.task('build-less', less.task);
-  gulp.task('concentrate', concentrate.task);
 }
 
 gulp.task('write-flag', ['build-less'], flags.task);
@@ -57,7 +57,7 @@ function cleanShutdown() {
 
   flags.remove();
 
-  if (options.symlinks) {
+  if (options.symlinks !== '') {
     symlinks.task.teardown();
   }
 
@@ -68,11 +68,12 @@ function cleanShutdown() {
  * Watches LESS and JS files for changes and recompiles/minifies/bundles
  * them.
  */
-const dependencies = (options.symlinks) ?
-  ['setup-symlinks', 'write-flag'] :
-  ['write-flag'];
+const dependencies = (options.symlinks === '') ?
+  ['write-flag'] :
+  ['setup-symlinks', 'write-flag'];
 
 gulp.task('default', dependencies, () => {
+  console.log('HELLO?');
   process.on('SIGINT', cleanShutdown);
   process.on('SIGHUP', cleanShutdown);
   process.on('SIGTERM', cleanShutdown);
