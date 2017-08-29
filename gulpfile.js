@@ -20,8 +20,17 @@ const knownOptions = {
 
 const options = minimist(process.argv.slice(2), knownOptions);
 
+function symlinkSetupTask(err, progress, complete) {
+  return symlinks.task.setup(
+      options.symlinks,
+      err,
+      progress,
+      complete
+  );
+}
+
 if (options.symlinks !== '') {
-  gulp.task('setup-symlinks', symlinks.task.setup);
+  gulp.task('setup-symlinks', symlinkSetupTask);
   gulp.task('teardown-symlinks', symlinks.task.teardown);
   gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
   gulp.task('phplint', ['setup-symlinks'], phplint.task);
