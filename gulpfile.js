@@ -73,7 +73,6 @@ const dependencies = (options.symlinks === '') ?
   ['setup-symlinks', 'write-flag'];
 
 gulp.task('default', dependencies, () => {
-  console.log('HELLO?');
   process.on('SIGINT', cleanShutdown);
   process.on('SIGHUP', cleanShutdown);
   process.on('SIGTERM', cleanShutdown);
