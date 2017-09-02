@@ -26,17 +26,10 @@ file.
 
 Symlinks
 --------
-The gulp watch task and other gulp tasks automatically set the
-`vendor/silverorange/*` symlinks to point to local personal git repositories.
-If you do not have a repo checked out for a package, the symlink for that
-package is not updated.
+If you want to work on a package, you can create symlinks to the package files
+and `www/` resources using `--symlinks=packageName1,packageName2`.
 
-Symlinks are required to use development packages (PHP or LESS). If you want
-to run gulp for compiled LESS but want to use the packages defined in the
-site `composer.lock`, use the `--no-symlinks` flag.
-
-Symlink handling is automatic and package symlinks are restored after gulp
-tasks are finished.
+Package symlinks are restored after gulp tasks are finished.
 
 Concentrate
 -----------

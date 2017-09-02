@@ -14,14 +14,18 @@ const less = require('./lib/less');
 const lesswatcher = require('./lib/lesswatcher');
 
 const knownOptions = {
-  boolean: 'symlinks',
-  default: { symlinks: true },
+  string: 'symlinks',
+  default: { symlinks: '' },
 };
 
 const options = minimist(process.argv.slice(2), knownOptions);
 
-if (options.symlinks) {
-  gulp.task('setup-symlinks', symlinks.task.setup);
+function symlinkSetupTask() {
+  symlinks.task.setup(options.symlinks);
+}
+
+if (options.symlinks.length) {
+  gulp.task('setup-symlinks', symlinkSetupTask);
   gulp.task('teardown-symlinks', symlinks.task.teardown);
   gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
   gulp.task('phplint', ['setup-symlinks'], phplint.task);
@@ -48,7 +52,7 @@ function cleanShutdown() {
 
   flags.remove();
 
-  if (options.symlinks) {
+  if (options.symlinks.length) {
     symlinks.task.teardown();
   }
 
@@ -59,7 +63,7 @@ function cleanShutdown() {
  * Watches LESS and JS files for changes and recompiles/minifies/bundles
  * them.
  */
-const dependencies = (options.symlinks) ?
+const dependencies = (options.symlinks.length) ?
   ['setup-symlinks', 'write-flag'] :
   ['write-flag'];
 
