@@ -25,7 +25,7 @@ function symlinkSetupTask() {
 }
 
 if (options.symlinks.length) {
-  gulp.task('setup-symlinks', symlinkSetupTask);
+  gulp.task('setup-symlinks', ['teardown-symlinks'], symlinkSetupTask);
   gulp.task('teardown-symlinks', symlinks.task.teardown);
   gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
   gulp.task('phplint', ['setup-symlinks'], phplint.task);
