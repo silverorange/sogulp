@@ -37,6 +37,7 @@
   },
   "contributors": [
     "Michael Gauthier <mike@silverorange.com>",
+    "Nick Burka <nick@silverorange.com>",
     "Charles Waddell <charles@silverorange.com>"
   ],
   "licenses": [
@@ -44,5 +45,5 @@
       "type": "MIT",
       "url": "http://opensource.org/licenses/MIT"
     }
-  ],
+  ]
 }
