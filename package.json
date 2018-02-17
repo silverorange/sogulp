@@ -23,8 +23,7 @@
     "gulp-util": ">=2.2.14",
     "gulp-changed": ">=0.2.1",
     "gulp-spawn": "~0.3.0",
-    "minimist": "^1.2.0",
-    "q": "~1.0.1"
+    "minimist": "^1.2.0"
   },
   "devDependencies": {
     "eslint": "^3.4.0",
@@ -38,6 +37,7 @@
   },
   "contributors": [
     "Michael Gauthier <mike@silverorange.com>",
+    "Nick Burka <nick@silverorange.com>",
     "Charles Waddell <charles@silverorange.com>"
   ],
   "licenses": [
@@ -45,6 +45,5 @@
       "type": "MIT",
       "url": "http://opensource.org/licenses/MIT"
     }
-  ],
-  "engines" : { "node" : ">=6.7.0" }
+  ]
 }
