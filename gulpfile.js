@@ -1,6 +1,5 @@
 const gulp = require('gulp');
 const gutil = require('gulp-util');
-const q = require('q');
 const minimist = require('minimist');
 
 const symlinks = require('./lib/symlinks');
@@ -72,7 +71,7 @@ gulp.task('default', dependencies, () => {
   process.on('SIGHUP', cleanShutdown);
   process.on('SIGTERM', cleanShutdown);
 
-  return q.all([
+  return Promise.all([
     phpwatcher.watch(),
     lesswatcher.watch(),
   ]);
