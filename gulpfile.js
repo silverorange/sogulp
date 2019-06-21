@@ -24,17 +24,16 @@ function symlinkSetupTask() {
 }
 
 if (options.symlinks.length) {
-  gulp.task('setup-symlinks', ['teardown-symlinks'], symlinkSetupTask);
+  gulp.task('setup-symlinks', gulp.series('teardown-symlinks', symlinkSetupTask));
   gulp.task('teardown-symlinks', symlinks.task.teardown);
-  gulp.task('phpclassmap', ['setup-symlinks'], phpclassmap.task);
-  gulp.task('phplint', ['setup-symlinks'], phplint.task);
-  gulp.task('clean', ['teardown-symlinks'], clean.task);
-  gulp.task('concentrate-internal', ['setup-symlinks'], concentrate.task);
-  gulp.task('build-less', ['setup-symlinks'], less.task);
+  gulp.task('phpclassmap', gulp.series('setup-symlinks', phpclassmap.task));
+  gulp.task('phplint', gulp.series('setup-symlinks', phplint.task));
+  gulp.task('clean', gulp.series('teardown-symlinks', clean.task));
+  gulp.task('concentrate-internal', gulp.series('setup-symlinks', concentrate.task));
+  gulp.task('build-less', gulp.series('setup-symlinks', less.task));
   gulp.task(
     'concentrate',
-    ['concentrate-internal'],
-    () => symlinks.task.teardown()
+    gulp.series('concentrate-internal', () => symlinks.task.teardown())
   );
 } else {
   gulp.task('phpclassmap', phpclassmap.task);
@@ -44,7 +43,7 @@ if (options.symlinks.length) {
   gulp.task('concentrate', concentrate.task);
 }
 
-gulp.task('write-flag', ['build-less'], flags.task);
+gulp.task('write-flag', gulp.series('build-less', flags.task));
 
 function cleanShutdown() {
   gutil.log(gutil.colors.blue('BYE'));
@@ -66,7 +65,7 @@ const dependencies = (options.symlinks.length) ?
   ['setup-symlinks', 'write-flag'] :
   ['write-flag'];
 
-gulp.task('default', dependencies, () => {
+gulp.task('default', gulp.series(dependencies, () => {
   process.on('SIGINT', cleanShutdown);
   process.on('SIGHUP', cleanShutdown);
   process.on('SIGTERM', cleanShutdown);
@@ -75,4 +74,4 @@ gulp.task('default', dependencies, () => {
     phpwatcher.watch(),
     lesswatcher.watch(),
   ]);
-});
+}));
