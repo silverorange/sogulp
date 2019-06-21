@@ -31,10 +31,7 @@ if (options.symlinks.length) {
   gulp.task('clean', gulp.series('teardown-symlinks', clean.task));
   gulp.task('concentrate-internal', gulp.series('setup-symlinks', concentrate.task));
   gulp.task('build-less', gulp.series('setup-symlinks', less.task));
-  gulp.task(
-    'concentrate',
-    gulp.series('concentrate-internal', () => symlinks.task.teardown())
-  );
+  gulp.task('concentrate', gulp.series('concentrate-internal', 'teardown-symlinks'));
 } else {
   gulp.task('phpclassmap', phpclassmap.task);
   gulp.task('phplint', phplint.task);
