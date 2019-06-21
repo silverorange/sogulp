@@ -24,8 +24,8 @@ function symlinkSetupTask() {
 }
 
 if (options.symlinks.length) {
-  gulp.task('setup-symlinks', gulp.series('teardown-symlinks', symlinkSetupTask));
   gulp.task('teardown-symlinks', symlinks.task.teardown);
+  gulp.task('setup-symlinks', gulp.series('teardown-symlinks', symlinkSetupTask));
   gulp.task('phpclassmap', gulp.series('setup-symlinks', phpclassmap.task));
   gulp.task('phplint', gulp.series('setup-symlinks', phplint.task));
   gulp.task('clean', gulp.series('teardown-symlinks', clean.task));
