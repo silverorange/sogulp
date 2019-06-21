@@ -15,14 +15,14 @@
   },
   "dependencies": {
     "chokidar": "^1.5.1",
-    "gulp": ">=3.5.5",
+    "gulp": ">=4.0.2",
     "gulp-batch": "^1.0.5",
+    "gulp-changed": ">=4.0.0",
     "gulp-css-url-rebase": ">=0.2.2",
-    "gulp-less": ">=1.2.1",
-    "gulp-rename": ">=1.1.0",
+    "gulp-less": ">=1.2.3",
+    "gulp-rename": ">=1.4.0",
+    "gulp-spawn": "~0.4.4",
     "gulp-util": ">=2.2.14",
-    "gulp-changed": ">=0.2.1",
-    "gulp-spawn": "~0.3.0",
     "minimist": "^1.2.0"
   },
   "devDependencies": {
