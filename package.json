@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/silverorange/sogulp"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "files": [
     "lib",
     "gulpfile.js"
