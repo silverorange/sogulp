@@ -1,5 +1,6 @@
 const gulp = require('gulp');
-const gutil = require('gulp-util');
+const log = require('fancy-log');
+const colors = require('ansi-colors');
 const minimist = require('minimist');
 
 const symlinks = require('./lib/symlinks');
@@ -94,7 +95,7 @@ if (options.symlinks.length) {
 gulp.task('write-flag', gulp.series('build-less', flags.task));
 
 function cleanShutdown() {
-  gutil.log(gutil.colors.blue('BYE'));
+  log(colors.blue('BYE'));
 
   flags.remove();
 
