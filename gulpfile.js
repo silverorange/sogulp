@@ -32,37 +32,32 @@ if (options.symlinks.length) {
   );
   gulp.task(
     'phpclassmap',
-    gulp.series('setup-symlinks', (done) => {
-      phpclassmap.task();
-      done();
+    gulp.series('setup-symlinks', async () => {
+      await phpclassmap.task();
     })
   );
   gulp.task(
     'phplint',
-    gulp.series('setup-symlinks', (done) => {
+    gulp.series('setup-symlinks', async () => {
       phplint.task();
-      done();
     })
   );
   gulp.task(
     'clean',
-    gulp.series('teardown-symlinks', (done) => {
+    gulp.series('teardown-symlinks', async () => {
       clean.task();
-      done();
     })
   );
   gulp.task(
     'concentrate-internal',
-    gulp.series('setup-symlinks', (done) => {
+    gulp.series('setup-symlinks', async () => {
       concentrate.task();
-      done();
     })
   );
   gulp.task(
     'build-less',
-    gulp.series('setup-symlinks', (done) => {
+    gulp.series('setup-symlinks', async () => {
       less.task();
-      done();
     })
   );
   gulp.task(
@@ -70,29 +65,29 @@ if (options.symlinks.length) {
     gulp.series('concentrate-internal', 'teardown-symlinks')
   );
 } else {
-  gulp.task('phpclassmap', (done) => {
-    phpclassmap.task();
-    done();
+  gulp.task('phpclassmap', async () => {
+    await phpclassmap.task();
   });
-  gulp.task('phplint', (done) => {
+  gulp.task('phplint', async () => {
     phplint.task();
-    done();
   });
-  gulp.task('clean', (done) => {
+  gulp.task('clean', async () => {
     clean.task();
-    done();
   });
-  gulp.task('build-less', (done) => {
+  gulp.task('build-less', async () => {
     less.task();
-    done();
   });
-  gulp.task('concentrate', (done) => {
+  gulp.task('concentrate', async () => {
     concentrate.task();
-    done();
   });
 }
 
-gulp.task('write-flag', gulp.series('build-less', flags.task));
+gulp.task(
+  'write-flag',
+  gulp.series('build-less', async () => {
+    flags.task();
+  })
+);
 
 function cleanShutdown() {
   log(colors.blue('BYE'));
@@ -111,12 +106,12 @@ function cleanShutdown() {
  * them.
  */
 const dependencies = options.symlinks.length
-  ? gulp.series('setup-symlinks', 'write-flag')
-  : 'write-flag';
+  ? ['setup-symlinks', 'write-flag']
+  : ['write-flag'];
 
 gulp.task(
   'default',
-  gulp.series(dependencies, () => {
+  gulp.series(...dependencies, () => {
     process.on('SIGINT', cleanShutdown);
     process.on('SIGHUP', cleanShutdown);
     process.on('SIGTERM', cleanShutdown);
