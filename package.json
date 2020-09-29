@@ -41,6 +41,7 @@
     "lint": "eslint lib gulpfile.js"
   },
   "contributors": [
+    "Meg Mitchell <meg@silverorange.com>",
     "Michael Gauthier <mike@silverorange.com>",
     "Nick Burka <nick@silverorange.com>",
     "Charles Waddell <charles@silverorange.com>"
