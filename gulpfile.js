@@ -24,63 +24,58 @@ function symlinkSetupTask() {
   return symlinks.task.setup(options.symlinks);
 }
 
-if (options.symlinks.length) {
-  gulp.task('teardown-symlinks', symlinks.task.teardown);
-  gulp.task(
-    'setup-symlinks',
-    gulp.series('teardown-symlinks', symlinkSetupTask)
-  );
-  gulp.task(
-    'phpclassmap',
-    gulp.series('setup-symlinks', async () => {
-      await phpclassmap.task();
-    })
-  );
-  gulp.task(
-    'phplint',
-    gulp.series('setup-symlinks', async () => {
-      phplint.task();
-    })
-  );
-  gulp.task(
-    'clean',
-    gulp.series('teardown-symlinks', async () => {
-      clean.task();
-    })
-  );
-  gulp.task(
-    'concentrate-internal',
-    gulp.series('setup-symlinks', async () => {
-      concentrate.task();
-    })
-  );
-  gulp.task(
-    'build-less',
-    gulp.series('setup-symlinks', async () => {
-      less.task();
-    })
-  );
-  gulp.task(
-    'concentrate',
-    gulp.series('concentrate-internal', 'teardown-symlinks')
-  );
-} else {
-  gulp.task('phpclassmap', async () => {
+const useSymlinks = options.symlinks.length > 0;
+
+gulp.task(
+  'teardown-symlinks',
+  useSymlinks ? symlinks.task.teardown : async () => null
+);
+
+gulp.task(
+  'setup-symlinks',
+  useSymlinks
+    ? gulp.series('teardown-symlinks', symlinkSetupTask)
+    : async () => null
+);
+
+gulp.task(
+  'phpclassmap',
+  gulp.series('setup-symlinks', async () => {
     await phpclassmap.task();
-  });
-  gulp.task('phplint', async () => {
+  })
+);
+
+gulp.task(
+  'phplint',
+  gulp.series('setup-symlinks', async () => {
     phplint.task();
-  });
-  gulp.task('clean', async () => {
+  })
+);
+
+gulp.task(
+  'clean',
+  gulp.series('teardown-symlinks', async () => {
     clean.task();
-  });
-  gulp.task('build-less', async () => {
+  })
+);
+
+gulp.task(
+  'build-less',
+  gulp.series('setup-symlinks', async () => {
     less.task();
-  });
-  gulp.task('concentrate', async () => {
-    concentrate.task();
-  });
-}
+  })
+);
+
+gulp.task(
+  'concentrate',
+  gulp.series(
+    'setup-symlinks',
+    async () => {
+      concentrate.task();
+    },
+    'teardown-symlinks'
+  )
+);
 
 gulp.task(
   'write-flag',
@@ -89,13 +84,13 @@ gulp.task(
   })
 );
 
-function cleanShutdown() {
+async function cleanShutdown() {
   log(colors.blue('BYE'));
 
   flags.remove();
 
-  if (options.symlinks.length) {
-    symlinks.task.teardown();
+  if (useSymlinks) {
+    await symlinks.task.teardown();
   }
 
   process.exit();
@@ -105,7 +100,7 @@ function cleanShutdown() {
  * Watches LESS and JS files for changes and recompiles/minifies/bundles
  * them.
  */
-const dependencies = options.symlinks.length
+const dependencies = useSymlinks
   ? ['setup-symlinks', 'write-flag']
   : ['write-flag'];
 
