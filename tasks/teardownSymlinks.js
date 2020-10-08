@@ -52,5 +52,6 @@ module.exports = async function teardownSymlinks() {
       () => log(colors.blue('Done'))
     );
   }
+
   return Promise.resolve();
 };

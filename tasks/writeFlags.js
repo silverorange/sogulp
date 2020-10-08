@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs/promises');
 const paths = require('../lib/paths');
 
 /**
@@ -7,10 +7,7 @@ const paths = require('../lib/paths');
  * This is needed so SiteHtmlHeadEntrySetDisplayer will use the compiled
  * LESS paths when rendering the page on the server.
  */
-module.exports = async function writeFlags(error, complete) {
+module.exports = async function writeFlags() {
   const ts = Math.floor(new Date().getTime() / 1000);
-  fs.writeFileSync(paths.compiledFlag, ts);
-  if (complete) {
-    complete();
-  }
+  await fs.writeFile(paths.compiledFlag, ts);
 };

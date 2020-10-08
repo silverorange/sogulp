@@ -7,11 +7,10 @@ const deleteIfExists = require('../lib/deleteIfExists');
  * This is needed so SiteHtmlHeadEntrySetDisplayer will switch back to
  * dynamic LESS compilation
  */
-module.exports = async function removeFlags(error, complete) {
-  deleteIfExists(paths.compiledFlag);
-  deleteIfExists(paths.minifiedFlag);
-  deleteIfExists(paths.combinedFlag);
-  if (complete) {
-    complete();
-  }
+module.exports = async function removeFlags() {
+  await Promise.all([
+    deleteIfExists(paths.compiledFlag),
+    deleteIfExists(paths.minifiedFlag),
+    deleteIfExists(paths.combinedFlag),
+  ]);
 };
