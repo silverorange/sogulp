@@ -13,6 +13,7 @@
     "lib",
     "gulpfile.js"
   ],
+  "main": "gulpfile.js",
   "bugs": {
     "url": "https://github.com/silverorange/sogulp/issues"
   },
