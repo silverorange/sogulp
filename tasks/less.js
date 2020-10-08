@@ -23,7 +23,7 @@ module.exports = function less() {
       // Compile less with include path set to the www dir. Less includes
       // within files will be resolved relative to "./www"
       .pipe(gulpLess({ paths: [path.join(__dirname, 'www')] }))
-      .on('error', (e) => {
+      .on('error', function handleError(e) {
         log(colors.red('LESSC ERROR:'), e.message);
         // Needed so watcher tasks get notified the stream has ended.
         this.emit('end');
