@@ -15,7 +15,7 @@ module.exports = function lesswatcher() {
     watcher.on('ready', () => {
       const buildLess = batch((events, complete) => {
         log(colors.gray('..'), colors.magenta('starting less build'));
-        less.on('end', () => {
+        less().on('end', () => {
           log(colors.gray('..'), colors.magenta('finished less build'));
           complete();
         });
