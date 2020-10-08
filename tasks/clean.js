@@ -1,8 +1,8 @@
 const fs = require('fs');
 const log = require('fancy-log');
 const colors = require('ansi-colors');
-const paths = require('./paths');
-const flags = require('./flags');
+const paths = require('../lib/paths');
+const removeFlags = require('./removeFlags');
 
 function deleteFolderRecursive(path, progress) {
   let files = [];
@@ -44,45 +44,41 @@ function removeCombined(error, progress, complete) {
   }
 }
 
-module.exports = {
-  task: function cleanTask() {
-    log(colors.blue('Removing minified files:'));
-    removeMinified(
-      null,
-      (line) => log(colors.gray('..'), line),
-      () => {
-        log(colors.blue('Done'));
-        log('');
-      }
-    );
-
-    log(colors.blue('Removing compiled files:'));
-    removeCompiled(
-      null,
-      (line) => log(colors.gray('..'), line),
-      () => {
-        log(colors.blue('Done'));
-        log('');
-      }
-    );
-
-    log(colors.blue('Removing combined files:'));
-    removeCombined(
-      null,
-      (line) => log(colors.gray('..'), line),
-      () => {
-        log(colors.blue('Done'));
-        log('');
-      }
-    );
-
-    // delete flag files
-    log(colors.blue('Removing flags:'));
-    flags.remove(null, () => {
+module.exports = async function clean() {
+  log(colors.blue('Removing minified files:'));
+  removeMinified(
+    null,
+    (line) => log(colors.gray('..'), line),
+    () => {
       log(colors.blue('Done'));
       log('');
-    });
-  },
-};
+    }
+  );
 
-// }}}
+  log(colors.blue('Removing compiled files:'));
+  removeCompiled(
+    null,
+    (line) => log(colors.gray('..'), line),
+    () => {
+      log(colors.blue('Done'));
+      log('');
+    }
+  );
+
+  log(colors.blue('Removing combined files:'));
+  removeCombined(
+    null,
+    (line) => log(colors.gray('..'), line),
+    () => {
+      log(colors.blue('Done'));
+      log('');
+    }
+  );
+
+  // delete flag files
+  log(colors.blue('Removing flags:'));
+  await removeFlags(null, () => {
+    log(colors.blue('Done'));
+    log('');
+  });
+};

@@ -87,12 +87,10 @@ function run(error, out, err) {
   });
 }
 
-module.exports = {
-  task: function runConcentrateTask() {
-    run(
-      null,
-      (line) => log(colors.cyan('[concentrate]'), line),
-      (line) => log(colors.red('[concentrate]'), line)
-    );
-  },
+module.exports = async function concentrate() {
+  run(
+    null,
+    (line) => log(colors.cyan('[concentrate]'), line),
+    (line) => log(colors.red('[concentrate]'), line)
+  );
 };
