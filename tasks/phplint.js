@@ -1,6 +1,6 @@
-const paths = require('./paths');
-const phplintStream = require('./phplintStream');
+const paths = require('../lib/paths');
+const phplintStream = require('../lib/phplintStream');
 
-module.exports = async function phplint() {
+module.exports = function phplint() {
   return phplintStream(paths.php);
 };

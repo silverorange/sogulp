@@ -87,8 +87,8 @@ function run(error, out, err) {
   });
 }
 
-module.exports = async function concentrate() {
-  run(
+module.exports = function concentrate() {
+  return run(
     null,
     (line) => log(colors.cyan('[concentrate]'), line),
     (line) => log(colors.red('[concentrate]'), line)

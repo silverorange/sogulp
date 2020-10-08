@@ -12,7 +12,7 @@ const paths = require('../lib/paths');
  * Rebuilds LESS files in the www/styles and www/packages/[*]/styles
  * directories
  */
-module.exports = async function less() {
+module.exports = function less() {
   return (
     gulp
       .src(paths.less, { cwdbase: true })

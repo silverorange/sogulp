@@ -3,7 +3,7 @@ const childProcess = require('child_process');
 
 const { execFile } = childProcess;
 
-module.exports = async function phpclassmap() {
+module.exports = function phpclassmap() {
   return new Promise((resolve, reject) => {
     execFile('composer', ['-q', 'dump-autoload'], (error) => {
       if (error !== null) {
