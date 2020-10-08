@@ -8,7 +8,7 @@ const paths = require('../lib/paths');
 const phplintStream = require('../lib/phplintStream');
 const phpclassmap = require('./phpclassmap');
 
-module.exports = async function phpwatcher() {
+module.exports = function phpwatcher() {
   return new Promise((resolve) => {
     const hasComposer = fs.existsSync(paths.composerLock);
     const watchPaths = paths.php.slice();

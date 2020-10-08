@@ -5,7 +5,7 @@ const chokidar = require('chokidar');
 const paths = require('../lib/paths');
 const less = require('./less');
 
-module.exports = async function lesswatcher() {
+module.exports = function lesswatcher() {
   return new Promise((resolve) => {
     const watcher = chokidar.watch(paths.less, {
       persistent: true,
