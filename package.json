@@ -9,11 +9,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "files": [
-    "lib",
-    "gulpfile.js"
-  ],
-  "main": "gulpfile.js",
+  "main": "src/gulpfile.js",
   "bugs": {
     "url": "https://github.com/silverorange/sogulp/issues"
   },
@@ -43,7 +39,7 @@
     "prettier": "^2.1.2"
   },
   "scripts": {
-    "lint": "eslint lib/**/*.js gulpfile.js"
+    "lint": "eslint src/**/*.js"
   },
   "contributors": [
     "Meg Mitchell <meg@silverorange.com>",
