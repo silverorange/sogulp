@@ -1,8 +1,9 @@
-const { series, parallel } = require('gulp');
+const { series, watch } = require('gulp');
 
 const log = require('fancy-log');
 const colors = require('ansi-colors');
 
+const paths = require('./lib/paths');
 const setupSymlinks = require('./tasks/setupSymlinks');
 const teardownSymlinks = require('./tasks/teardownSymlinks');
 const concentrate = require('./tasks/concentrate');
@@ -11,9 +12,8 @@ const removeFlags = require('./tasks/removeFlags');
 const clean = require('./tasks/clean');
 const phplint = require('./tasks/phplint');
 const phpclassmap = require('./tasks/phpclassmap');
-const phpwatcher = require('./tasks/phpwatcher');
+// const phpwatcher = require('./tasks/phpwatcher');
 const less = require('./tasks/less');
-const lesswatcher = require('./tasks/lesswatcher');
 
 exports.setupSymlinks = series(teardownSymlinks, setupSymlinks);
 exports.phpclassmap = series(exports.setupSymlinks, phpclassmap);
@@ -25,15 +25,9 @@ exports.concentrate = series(
   concentrate,
   teardownSymlinks
 );
-exports.writeFlags = series(exports.less, writeFlags);
 
-async function cleanShutdown() {
-  log(colors.blue('BYE'));
-
-  await removeFlags();
-  await teardownSymlinks();
-
-  process.exit();
+function logTask(...message) {
+  return async () => log(...message);
 }
 
 /**
@@ -41,11 +35,41 @@ async function cleanShutdown() {
  * them.
  */
 exports.default = series(
-  exports.writeFlags,
-  async () => {
+  exports.setupSymlinks,
+  logTask(colors.blue('Compiling less files ...')),
+  less,
+  logTask(colors.blue('Done')),
+  writeFlags,
+  logTask(colors.blue('Starting watchers for less and php ...')),
+  (cb) => {
+    const lessWatcher = watch(
+      paths.less,
+      {
+        persistent: true,
+        followSymlinks: true,
+      },
+      series(
+        logTask(colors.gray('..'), colors.magenta('starting less build')),
+        less,
+        logTask(colors.gray('..'), colors.magenta('finished less build'))
+      )
+    );
+
+    async function cleanShutdown() {
+      log(colors.blue('Stoping watchers for less and php ...'));
+
+      // Chokidar docs say this returns a Promise but that does not seem to be
+      // true.
+      lessWatcher.close();
+
+      log(colors.blue('Stopped'));
+      cb();
+    }
+
     process.on('SIGINT', cleanShutdown);
     process.on('SIGHUP', cleanShutdown);
     process.on('SIGTERM', cleanShutdown);
   },
-  parallel(phpwatcher, lesswatcher)
+  removeFlags,
+  teardownSymlinks
 );
