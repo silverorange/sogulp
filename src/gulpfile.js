@@ -1,9 +1,10 @@
-const { series, watch } = require('gulp');
+const { series, parallel, watch } = require('gulp');
 
 const log = require('fancy-log');
 const colors = require('ansi-colors');
 
 const paths = require('./lib/paths');
+const getPhpWatchPaths = require('./lib/getPhpWatchPaths');
 const setupSymlinks = require('./tasks/setupSymlinks');
 const teardownSymlinks = require('./tasks/teardownSymlinks');
 const concentrate = require('./tasks/concentrate');
@@ -36,10 +37,19 @@ function logTask(...message) {
  */
 exports.default = series(
   exports.setupSymlinks,
-  logTask(colors.blue('Compiling less files ...')),
-  less,
-  logTask(colors.blue('Done')),
-  writeFlags,
+  parallel(
+    series(
+      logTask(colors.blue('Compiling less files ...')),
+      less,
+      logTask(colors.blue('Done')),
+      writeFlags
+    ),
+    series(
+      logTask(colors.blue('Running composer dump-autoload ...')),
+      phpclassmap,
+      logTask(colors.blue('Done'))
+    )
+  ),
   logTask(colors.blue('Starting watchers for less and php ...')),
   (cb) => {
     const lessWatcher = watch(
@@ -55,12 +65,41 @@ exports.default = series(
       )
     );
 
+    const phpclassmapWatcher = watch(
+      getPhpWatchPaths(),
+      {
+        // Ignore composer autoload files and backup silverorange composer
+        // package directories.
+        ignored: [
+          /^vendor\/autoload.php$/,
+          /^vendor\/composer\/.*\.php$/,
+          /^vendor\/silverorange\/.*\.original\/.*\.php$/,
+          /^vendor\/hippo\/.*\.original\/.*\.php$/,
+        ],
+        persistent: true,
+        followSymlinks: true,
+        events: ['add', 'change', 'delete'],
+      },
+      series(
+        logTask(
+          colors.gray('..'),
+          colors.magenta('starting composer dump-autoload')
+        ),
+        phpclassmap,
+        logTask(
+          colors.gray('..'),
+          colors.magenta('finished composer dump-autoload')
+        )
+      )
+    );
+
     async function cleanShutdown() {
       log(colors.blue('Stoping watchers for less and php ...'));
 
       // Chokidar docs say this returns a Promise but that does not seem to be
       // true.
       lessWatcher.close();
+      phpclassmapWatcher.close();
 
       log(colors.blue('Stopped'));
       cb();
