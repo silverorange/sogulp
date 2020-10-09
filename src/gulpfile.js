@@ -1,8 +1,6 @@
 const { series, parallel, watch } = require('gulp');
-
 const log = require('fancy-log');
 const colors = require('ansi-colors');
-
 const paths = require('./lib/paths');
 const getPhpWatchPaths = require('./lib/getPhpWatchPaths');
 const phplintStream = require('./lib/phplintStream');
@@ -14,7 +12,6 @@ const removeFlags = require('./tasks/removeFlags');
 const clean = require('./tasks/clean');
 const phplint = require('./tasks/phplint');
 const phpclassmap = require('./tasks/phpclassmap');
-// const phpwatcher = require('./tasks/phpwatcher');
 const less = require('./tasks/less');
 
 exports.setupSymlinks = series(teardownSymlinks, setupSymlinks);
