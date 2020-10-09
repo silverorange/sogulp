@@ -41,16 +41,16 @@ exports.default = series(
     series(
       logTask(colors.blue('Compiling less files ...')),
       less,
-      logTask(colors.blue('Done')),
+      logTask(colors.blue('... done compiling less files.')),
       writeFlags
     ),
     series(
       logTask(colors.blue('Running composer dump-autoload ...')),
       phpclassmap,
-      logTask(colors.blue('Done'))
+      logTask(colors.blue('... done running composer dump-autoload files.'))
     )
   ),
-  logTask(colors.blue('Starting watchers for less and php ...')),
+  logTask(colors.blue('Starting watchers for LESS and PHP ...')),
   (cb) => {
     const lessWatcher = watch(
       paths.less,
@@ -59,55 +59,57 @@ exports.default = series(
         followSymlinks: true,
       },
       series(
-        logTask(colors.gray('..'), colors.magenta('starting less build')),
+        logTask(colors.gray('..'), colors.magenta('starting LESS build')),
         less,
-        logTask(colors.gray('..'), colors.magenta('finished less build'))
+        logTask(colors.gray('..'), colors.magenta('finished LESS build'))
       )
     );
 
-    const phpclassmapWatcher = watch(
-      getPhpWatchPaths(),
-      {
-        // Ignore composer autoload files and backup silverorange composer
-        // package directories.
-        ignored: [
-          /^vendor\/autoload.php$/,
-          /^vendor\/composer\/.*\.php$/,
-          /^vendor\/silverorange\/.*\.original\/.*\.php$/,
-          /^vendor\/hippo\/.*\.original\/.*\.php$/,
-        ],
-        persistent: true,
-        followSymlinks: true,
-        events: ['add', 'change', 'delete'],
-      },
-      series(
-        logTask(
-          colors.gray('..'),
-          colors.magenta('starting composer dump-autoload')
-        ),
-        phpclassmap,
-        logTask(
-          colors.gray('..'),
-          colors.magenta('finished composer dump-autoload')
+    getPhpWatchPaths().then((phpPaths) => {
+      const phpclassmapWatcher = watch(
+        phpPaths,
+        {
+          // Ignore composer autoload files and backup silverorange composer
+          // package directories.
+          ignored: [
+            /^vendor\/autoload.php$/,
+            /^vendor\/composer\/.*\.php$/,
+            /^vendor\/silverorange\/.*\.original\/.*\.php$/,
+            /^vendor\/hippo\/.*\.original\/.*\.php$/,
+          ],
+          persistent: true,
+          followSymlinks: true,
+          events: ['add', 'change', 'delete'],
+        },
+        series(
+          logTask(
+            colors.gray('..'),
+            colors.magenta('starting composer dump-autoload')
+          ),
+          phpclassmap,
+          logTask(
+            colors.gray('..'),
+            colors.magenta('finished composer dump-autoload')
+          )
         )
-      )
-    );
+      );
 
-    async function cleanShutdown() {
-      log(colors.blue('Stoping watchers for less and php ...'));
+      async function cleanShutdown() {
+        log(colors.blue('Stoping watchers for LESS and PHP ...'));
 
-      // Chokidar docs say this returns a Promise but that does not seem to be
-      // true.
-      lessWatcher.close();
-      phpclassmapWatcher.close();
+        // Chokidar docs say this returns a Promise but that does not seem to be
+        // true.
+        lessWatcher.close();
+        phpclassmapWatcher.close();
 
-      log(colors.blue('Stopped'));
-      cb();
-    }
+        log(colors.blue('... stopped watchers for LESS and PHP.'));
+        cb();
+      }
 
-    process.on('SIGINT', cleanShutdown);
-    process.on('SIGHUP', cleanShutdown);
-    process.on('SIGTERM', cleanShutdown);
+      process.on('SIGINT', cleanShutdown);
+      process.on('SIGHUP', cleanShutdown);
+      process.on('SIGTERM', cleanShutdown);
+    });
   },
   removeFlags,
   teardownSymlinks
