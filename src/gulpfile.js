@@ -5,6 +5,7 @@ const colors = require('ansi-colors');
 
 const paths = require('./lib/paths');
 const getPhpWatchPaths = require('./lib/getPhpWatchPaths');
+const phplintStream = require('./lib/phplintStream');
 const setupSymlinks = require('./tasks/setupSymlinks');
 const teardownSymlinks = require('./tasks/teardownSymlinks');
 const concentrate = require('./tasks/concentrate');
@@ -50,7 +51,7 @@ exports.default = series(
       logTask(colors.blue('... done running composer dump-autoload files.'))
     )
   ),
-  logTask(colors.blue('Starting watchers for LESS and PHP ...')),
+  logTask(colors.blue('Watching LESS and PHP files for changes ...')),
   (cb) => {
     const lessWatcher = watch(
       paths.less,
@@ -66,7 +67,7 @@ exports.default = series(
     );
 
     getPhpWatchPaths().then((phpPaths) => {
-      const phpclassmapWatcher = watch(
+      const phpWatcher = watch(
         phpPaths,
         {
           // Ignore composer autoload files and backup silverorange composer
@@ -94,13 +95,19 @@ exports.default = series(
         )
       );
 
+      // Linit only changed files. These do not get debounced or queued. See
+      // https://gulpjs.com/docs/en/api/watch#chokidar-instance
+      phpWatcher
+        .on('add', (addedPath) => phplintStream(addedPath))
+        .on('change', (changedPath) => phplintStream(changedPath));
+
       async function cleanShutdown() {
         log(colors.blue('Stoping watchers for LESS and PHP ...'));
 
         // Chokidar docs say this returns a Promise but that does not seem to be
         // true.
         lessWatcher.close();
-        phpclassmapWatcher.close();
+        phpWatcher.close();
 
         log(colors.blue('... stopped watchers for LESS and PHP.'));
         cb();
