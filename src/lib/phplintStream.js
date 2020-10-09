@@ -12,41 +12,46 @@ function spawn() {
 }
 
 function filter(error, err) {
-  const filteredStream = new Stream.PassThrough({ objectMode: true });
+  return new Stream.PassThrough({
+    objectMode: true,
+    transform: function transform(file, unused, done) {
+      if (file.isNull()) {
+        this.push(file);
+        done();
+        return;
+      }
 
-  function transform(file, unused, done) {
-    if (file.isNull()) {
-      this.push(file);
-      done();
-      return;
-    }
+      if (file.isBuffer()) {
+        // remove whitespace
+        const filename = file.path.substr(file.base.length + 1);
+        let contents = file.contents.toString().replace(/(^\s+|\s+$)/g, '');
 
-    if (file.isBuffer()) {
-      // remove whitespace
-      const filename = file.path.substr(file.base.length + 1);
-      let contents = file.contents.toString().replace(/(^\s+|\s+$)/g, '');
+        // exclude valid files from output
+        if (
+          !/^No syntax errors detected in Standard input code/.test(contents)
+        ) {
+          // remove stdin filename
+          contents = contents.replace(
+            /in Standard input code on line/,
+            'on line'
+          );
 
-      // exclude valid files from output
-      if (!/^No syntax errors detected in -/.test(contents)) {
-        // remove stdin filename
-        contents = contents.replace(/in - on line/, 'on line');
+          // remove unnecessary line
+          contents = contents.replace(
+            /\s+Errors parsing Standard input code$/g,
+            ''
+          );
 
-        // remove unnecessary line
-        contents = contents.replace(/\s+Errors parsing -$/g, '');
-
-        if (err) {
-          err(filename, contents);
+          if (err) {
+            err(filename, contents);
+          }
         }
       }
-    }
 
-    this.push(file);
-    done();
-  }
-
-  filteredStream._transform = transform; // eslint-disable-line no-underscore-dangle
-
-  return filteredStream;
+      this.push(file);
+      done();
+    },
+  });
 }
 
 module.exports = function phplintStream(streamedPaths) {
