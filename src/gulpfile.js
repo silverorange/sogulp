@@ -77,7 +77,6 @@ exports.default = series(
           ],
           persistent: true,
           followSymlinks: true,
-          events: ['add', 'change', 'delete'],
         },
         series(
           log(
