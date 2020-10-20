@@ -92,7 +92,7 @@ exports.default = series(
         )
       );
 
-      // Linit only changed files. These do not get debounced or queued. See
+      // Lint only changed files. These do not get debounced or queued. See
       // https://gulpjs.com/docs/en/api/watch#chokidar-instance
       phpWatcher
         .on('add', (addedPath) => phplintStream(addedPath))
@@ -101,8 +101,8 @@ exports.default = series(
       async function cleanShutdown() {
         fancyLog(colors.gray('..'), 'stoping watchers for LESS and PHP...');
 
-        // Chokidar docs say this returns a Promise but that does not seem to be
-        // true.
+        // Chokidar docs say the close() method returns a Promise but that does
+        // not seem to be true.
         lessWatcher.close();
         phpWatcher.close();
 
