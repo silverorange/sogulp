@@ -1,5 +1,5 @@
 const { series, parallel, watch } = require('gulp');
-const log = require('fancy-log');
+const fancyLog = require('fancy-log');
 const colors = require('ansi-colors');
 const paths = require('./lib/paths');
 const getPhpWatchPaths = require('./lib/getPhpWatchPaths');
@@ -13,6 +13,7 @@ const clean = require('./tasks/clean');
 const phplint = require('./tasks/phplint');
 const phpclassmap = require('./tasks/phpclassmap');
 const less = require('./tasks/less');
+const log = require('./tasks/log');
 
 exports.setupSymlinks = series(teardownSymlinks, setupSymlinks);
 exports.phpclassmap = series(exports.setupSymlinks, phpclassmap);
@@ -25,10 +26,6 @@ exports.concentrate = series(
   teardownSymlinks
 );
 
-function logTask(...message) {
-  return async () => log(...message);
-}
-
 /**
  * Watches LESS and JS files for changes and recompiles/minifies/bundles
  * them.
@@ -37,18 +34,18 @@ exports.default = series(
   exports.setupSymlinks,
   parallel(
     series(
-      logTask(colors.gray('..'), `starting '${colors.cyan('less')}'...`),
+      log(colors.gray('..'), `starting '${colors.cyan('less')}'...`),
       less,
       writeFlags,
-      logTask(colors.gray('..'), `finished '${colors.cyan('less')}'`)
+      log(colors.gray('..'), `finished '${colors.cyan('less')}'`)
     ),
     series(
-      logTask(colors.gray('..'), `starting '${colors.cyan('phpclassmap')}'...`),
+      log(colors.gray('..'), `starting '${colors.cyan('phpclassmap')}'...`),
       phpclassmap,
-      logTask(colors.gray('..'), `finished '${colors.cyan('phpclassmap')}'`)
+      log(colors.gray('..'), `finished '${colors.cyan('phpclassmap')}'`)
     )
   ),
-  logTask(
+  log(
     colors.gray('..'),
     'ready and watching LESS and PHP files for changes...'
   ),
@@ -60,9 +57,9 @@ exports.default = series(
         followSymlinks: true,
       },
       series(
-        logTask(colors.gray('..'), colors.magenta('starting LESS build')),
+        log(colors.gray('..'), colors.magenta('starting LESS build')),
         less,
-        logTask(colors.gray('..'), colors.magenta('finished LESS build'))
+        log(colors.gray('..'), colors.magenta('finished LESS build'))
       )
     );
 
@@ -83,12 +80,12 @@ exports.default = series(
           events: ['add', 'change', 'delete'],
         },
         series(
-          logTask(
+          log(
             colors.gray('..'),
             colors.magenta('starting composer dump-autoload')
           ),
           phpclassmap,
-          logTask(
+          log(
             colors.gray('..'),
             colors.magenta('finished composer dump-autoload')
           )
@@ -102,14 +99,14 @@ exports.default = series(
         .on('change', (changedPath) => phplintStream(changedPath));
 
       async function cleanShutdown() {
-        log(colors.gray('..'), 'stoping watchers for LESS and PHP...');
+        fancyLog(colors.gray('..'), 'stoping watchers for LESS and PHP...');
 
         // Chokidar docs say this returns a Promise but that does not seem to be
         // true.
         lessWatcher.close();
         phpWatcher.close();
 
-        log(colors.gray('..'), 'stopped watchers for LESS and PHP.');
+        fancyLog(colors.gray('..'), 'stopped watchers for LESS and PHP.');
         cb();
       }
 
