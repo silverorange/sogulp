@@ -37,18 +37,21 @@ exports.default = series(
   exports.setupSymlinks,
   parallel(
     series(
-      logTask(colors.blue('Compiling less files ...')),
+      logTask(colors.gray('..'), `starting '${colors.cyan('less')}'...`),
       less,
-      logTask(colors.blue('... done compiling less files.')),
-      writeFlags
+      writeFlags,
+      logTask(colors.gray('..'), `finished '${colors.cyan('less')}'`)
     ),
     series(
-      logTask(colors.blue('Running composer dump-autoload ...')),
+      logTask(colors.gray('..'), `starting '${colors.cyan('phpclassmap')}'...`),
       phpclassmap,
-      logTask(colors.blue('... done running composer dump-autoload files.'))
+      logTask(colors.gray('..'), `finished '${colors.cyan('phpclassmap')}'`)
     )
   ),
-  logTask(colors.blue('Watching LESS and PHP files for changes ...')),
+  logTask(
+    colors.gray('..'),
+    'ready and watching LESS and PHP files for changes...'
+  ),
   (cb) => {
     const lessWatcher = watch(
       paths.less,
@@ -99,14 +102,14 @@ exports.default = series(
         .on('change', (changedPath) => phplintStream(changedPath));
 
       async function cleanShutdown() {
-        log(colors.blue('Stoping watchers for LESS and PHP ...'));
+        log(colors.gray('..'), 'stoping watchers for LESS and PHP...');
 
         // Chokidar docs say this returns a Promise but that does not seem to be
         // true.
         lessWatcher.close();
         phpWatcher.close();
 
-        log(colors.blue('... stopped watchers for LESS and PHP.'));
+        log(colors.gray('..'), 'stopped watchers for LESS and PHP.');
         cb();
       }
 
