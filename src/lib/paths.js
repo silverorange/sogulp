@@ -4,7 +4,7 @@ const cwd = process.cwd();
 const workDir = path.basename(cwd);
 const vendorDirs = [
   path.join(cwd, 'vendor', 'silverorange'),
-  path.join(cwd, 'vendor', 'hippo')
+  path.join(cwd, 'vendor', 'hippo'),
 ];
 const packagesDir = path.join(cwd, 'www', 'packages');
 
@@ -16,8 +16,9 @@ module.exports = {
   composerLock: 'composer.lock',
   less: [
     'www/styles/*.less',
-    'www/styles/*/*.less',
+    'www/styles/**/*.less',
     'www/packages/*/styles/*.less',
+    'www/packages/*/styles/**/*.less',
   ],
   php: [
     'include/*.php',
@@ -33,4 +34,5 @@ module.exports = {
   compiledFlag: 'www/.concentrate-compiled',
   minifiedFlag: 'www/.concentrate-minified',
   combinedFlag: 'www/.concentrate-combined',
+  symlinkSuffix: '.original',
 };

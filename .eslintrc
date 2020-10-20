@@ -1,9 +1,0 @@
-{
-  "extends": "airbnb",
-  "env": {
-    "node": true
-  },
-  "rules": {
-    "react/require-extension": "off"
-  }
-}

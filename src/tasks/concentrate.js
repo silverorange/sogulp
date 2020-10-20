@@ -1,9 +1,10 @@
-const gutil = require('gulp-util');
+const log = require('fancy-log');
+const colors = require('ansi-colors');
 const childProcess = require('child_process');
 
 function bufferedOutput(data, theBuffer, action) {
   const buffer = theBuffer;
-  const lines = (`${data}`).match(/[^\n]+(?:\r?\n|$)/g);
+  const lines = `${data}`.match(/[^\n]+(?:\r?\n|$)/g);
   if (lines !== null && lines.length) {
     lines.forEach((theLine) => {
       let line = theLine;
@@ -34,18 +35,15 @@ function bufferedOutput(data, theBuffer, action) {
  */
 function run(error, out, err) {
   return new Promise((resolve, reject) => {
-    const proc = childProcess.spawn(
-      './vendor/bin/concentrate',
-      [
-        '--compile',
-        '--minify',
-        '--combine',
-        '-vvv',
-        '-d',
-        'dependencies/',
-        'www/',
-      ]
-    );
+    const proc = childProcess.spawn('./vendor/bin/concentrate', [
+      '--compile',
+      '--minify',
+      '--combine',
+      '-vvv',
+      '-d',
+      'dependencies/',
+      'www/',
+    ]);
 
     const stdoutBuffer = { buffer: '' };
     const stderrBuffer = { buffer: '' };
@@ -65,7 +63,7 @@ function run(error, out, err) {
     proc.on('error', (procError) => {
       procError(
         'Failed to run concentrate process. Make sure composer packages are ' +
-        'installed'
+          'installed'
       );
       reject();
     });
@@ -89,12 +87,10 @@ function run(error, out, err) {
   });
 }
 
-module.exports = {
-  task: function runConcentrateTask() {
-    run(
-      null,
-      (line) => gutil.log(gutil.colors.cyan('[concentrate]'), line),
-      (line) => gutil.log(gutil.colors.red('[concentrate]'), line)
-    );
-  },
+module.exports = function concentrate() {
+  return run(
+    null,
+    (line) => log(colors.cyan('[concentrate]'), line),
+    (line) => log(colors.red('[concentrate]'), line)
+  );
 };
